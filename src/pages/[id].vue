@@ -181,7 +181,7 @@ const loadRocket = async () => {
   const id = route.params.id as string;
   const localRocket =
     store.getLocalRocket(id) ||
-    store.state.rockets.find(
+    store.rockets.find(
       (r) => r.id.toString() === id && r.manufacturer?.country_code === "Local",
     );
 

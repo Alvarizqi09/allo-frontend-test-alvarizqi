@@ -9,7 +9,7 @@ export function useRockets() {
 
   const fetchRockets = async () => {
     // Avoid refetching when the list is already hydrated, including local rockets.
-    if (store.state.rockets.length > 0) return;
+    if (store.rockets.length > 0) return;
 
     store.setLoading(true);
     store.setError(null);
@@ -29,7 +29,7 @@ export function useRockets() {
   };
 
   const filteredRockets = computed(() => {
-    let result = store.state.rockets;
+    let result = store.rockets;
     if (searchQuery.value) {
       const query = searchQuery.value.toLowerCase();
       result = result.filter(
@@ -46,7 +46,7 @@ export function useRockets() {
   };
 
   return {
-    state: store.state,
+    state: store,
     searchQuery,
     fetchRockets,
     retryFetch,

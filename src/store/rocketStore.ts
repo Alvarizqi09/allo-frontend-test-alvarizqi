@@ -1,12 +1,5 @@
-import { reactive } from "vue";
+import { defineStore } from "pinia";
 import type { Rocket } from "../types/rocket";
-
-// Global state
-const state = reactive({
-  rockets: [] as Rocket[],
-  isLoading: false,
-  error: null as string | null,
-});
 
 const LOCAL_ROCKETS_KEY = "rocket-archive:custom-rockets";
 
@@ -26,27 +19,31 @@ const saveLocalRockets = (rockets: Rocket[]) => {
   window.localStorage.setItem(LOCAL_ROCKETS_KEY, JSON.stringify(rockets));
 };
 
-export function useRocketStore() {
-  return {
-    state,
+export const useRocketStore = defineStore("rockets", {
+  state: () => ({
+    rockets: [] as Rocket[],
+    isLoading: false,
+    error: null as string | null,
+  }),
+  actions: {
     setRockets(data: Rocket[]) {
-      state.rockets = [...getLocalRockets(), ...data];
+      this.rockets = [...getLocalRockets(), ...data];
     },
     setLoading(loading: boolean) {
-      state.isLoading = loading;
+      this.isLoading = loading;
     },
     setError(err: string | null) {
-      state.error = err;
+      this.error = err;
     },
     addRocket(rocket: Rocket) {
       const localRockets = [rocket, ...getLocalRockets()];
       saveLocalRockets(localRockets);
-      state.rockets.unshift(rocket);
+      this.rockets.unshift(rocket);
     },
     getLocalRocket(id: string | number) {
       return getLocalRockets().find(
         (rocket) => rocket.id.toString() === id.toString(),
       );
     },
-  };
-}
+  },
+});
