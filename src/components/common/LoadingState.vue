@@ -4,8 +4,8 @@
   >
     <!-- Futuristic Orbital Loader -->
     <div class="orbital-loader mb-8">
-      <div class="ring ring-outer"></div>
-      <div class="ring ring-inner"></div>
+      <div class="ring ring-outer" />
+      <div class="ring ring-inner" />
       <div class="core-icon">
         <v-icon
           icon="mdi-satellite-uplink"
@@ -24,7 +24,9 @@
       <span class="bracket text-grey-darken-1">]</span>
     </div>
 
-    <div class="sub-text mt-2 text-grey">ESTABLISHING SECURE CONNECTION...</div>
+    <div class="sub-text mt-2 text-grey">
+      ESTABLISHING SECURE CONNECTION...
+    </div>
   </div>
 </template>
 
