@@ -24,7 +24,9 @@
       <span class="bracket text-grey-darken-1">]</span>
     </div>
 
-    <div class="sub-text mt-2 text-grey">ESTABLISHING SECURE CONNECTION...</div>
+    <div class="sub-text mt-2 text-grey">
+      ESTABLISHING SECURE CONNECTION...
+    </div>
   </div>
 </template>
 
