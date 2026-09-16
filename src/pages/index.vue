@@ -3,62 +3,68 @@
     fluid
     class="command-center pa-0"
   >
-    <section class="hero-panel">
-      <div class="hero-decoration decoration-square" />
-      <div class="hero-decoration decoration-circle" />
-      <div class="hero-copy">
-        <div class="eyebrow">
-          <span class="status-dot" /> SPACE SYSTEMS / 2026
-        </div>
-        <h1>ROCKET <span>ARCHIVE</span></h1>
-        <p>
-          An index of launch vehicles, flight history, and machines built to
-          leave the ground.
-        </p>
-      </div>
-      <div
-        class="hero-rocket"
-        aria-hidden="true"
+    <div class="stars-bg" />
+
+    <section class="hero-panel d-flex align-center">
+      <v-container
+        max-width="1200"
+        class="position-relative z-index-2"
       >
-        <div class="pixel-flame flame-one" />
-        <div class="pixel-flame flame-two" />
-        <div class="rocket-badge">
-          <v-icon
-            icon="mdi-rocket-launch"
-            size="118"
-          />
-        </div>
-        <div class="rocket-caption">
-          LIFT OFF<br><strong>READY</strong>
-        </div>
-      </div>
-      <div class="hero-action">
-        <AddRocketDialog @add="addRocket" />
-      </div>
+        <v-row align="center">
+          <v-col
+            cols="12"
+            md="8"
+            class="hero-content"
+          >
+            <div class="system-status mb-4">
+              <span class="pulse-dot" /> SYSTEM ONLINE / DB_VER_2026
+            </div>
+            <h1 class="hero-title text-white">
+              ROCKET <br><span class="text-cyan">ARCHIVE</span>
+            </h1>
+            <p class="hero-subtitle text-grey-lighten-1 mt-4">
+              Advanced index of orbital launch vehicles, flight telemetry, and
+              engineered systems built to break gravity.
+            </p>
+            <div class="mt-8">
+              <AddRocketDialog @add="addRocket" />
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
+      <div class="cyber-grid" />
     </section>
 
     <v-container
       max-width="1200"
-      class="content-wrap px-4 px-md-6 py-8"
+      class="content-wrap px-4 px-md-6 py-12"
     >
-      <div class="section-heading">
+      <div
+        class="d-flex flex-column flex-md-row justify-space-between align-md-end mb-8 border-b-cyan pb-4"
+      >
         <div>
-          <div class="section-kicker">
+          <div class="text-cyan font-space-mono text-caption mb-1">
             01 / AVAILABLE VEHICLES
           </div>
-          <h2>Fleet inventory</h2>
+          <h2 class="text-h4 font-weight-bold text-white">
+            Fleet Inventory
+          </h2>
         </div>
-        <div class="fleet-count">
-          {{ filteredRockets.length.toString().padStart(2, "0") }} units
+        <div class="text-grey font-space-mono mt-4 mt-md-0">
+          DATA MATCH:
+          {{ filteredRockets.length.toString().padStart(2, "0") }} UNITS
         </div>
       </div>
 
       <v-row class="mb-8">
         <v-col
           cols="12"
-          md="8"
+          md="6"
         >
-          <RocketFilter v-model="searchQuery" />
+          <RocketFilter
+            v-model="searchQuery"
+            class="cyber-search"
+          />
         </v-col>
       </v-row>
 
@@ -69,23 +75,28 @@
       />
       <LoadingState
         v-else-if="state.isLoading"
-        text="Fetching rockets..."
+        text="Establishing uplink... Fetching data"
       />
+
       <template v-else>
         <div
           v-if="filteredRockets.length === 0"
-          class="empty-state"
+          class="empty-state text-center py-12"
         >
           <v-icon
-            icon="mdi-rocket-off"
-            size="64"
-            color="secondary"
-            class="mb-4"
+            icon="mdi-radar"
+            size="80"
+            color="cyan-darken-3"
+            class="mb-6 pulse-anim"
           />
-          <div class="text-h6">
-            No rockets found matching your search.
+          <div class="text-h5 text-white font-weight-light">
+            No telemetries found.
+          </div>
+          <div class="text-grey mt-2">
+            Adjust your search parameters.
           </div>
         </div>
+
         <v-row
           v-else
           class="rocket-grid"
@@ -96,6 +107,7 @@
             cols="12"
             sm="6"
             md="4"
+            class="gsap-rocket-item"
           >
             <RocketCard :rocket="rocket" />
           </v-col>
@@ -106,7 +118,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, watch, nextTick } from "vue";
+import gsap from "gsap";
 import { useRockets } from "../composables/useRockets";
 import RocketCard from "../components/rockets/RocketCard.vue";
 import RocketFilter from "../components/rockets/RocketFilter.vue";
@@ -123,215 +136,149 @@ const {
   addRocket,
 } = useRockets();
 
-onMounted(() => {
-  fetchRockets();
+const animateGrid = () => {
+  nextTick(() => {
+    gsap.fromTo(
+      ".gsap-rocket-item",
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" },
+    );
+  });
+};
+
+onMounted(async () => {
+  // Hero Animation
+  gsap.fromTo(
+    ".hero-content > *",
+    { opacity: 0, x: -30 },
+    { opacity: 1, x: 0, duration: 0.8, stagger: 0.15, ease: "power2.out" },
+  );
+
+  await fetchRockets();
+});
+
+watch(filteredRockets, () => {
+  if (filteredRockets.value.length > 0 && !state.isLoading) {
+    animateGrid();
+  }
 });
 </script>
 
 <style scoped>
 .command-center {
   min-height: 100vh;
-  background: #fbfbf9;
-}
-.hero-panel {
+  background-color: #060913;
+  color: #ffffff;
   position: relative;
-  min-height: 440px;
   overflow: hidden;
-  border-bottom: 3px solid #1c293c;
-  background: #f3f3ef;
-  color: #1c293c;
 }
-.hero-panel::after {
+
+.stars-bg {
   position: absolute;
+  top: 0;
+  left: 0;
   right: 0;
   bottom: 0;
-  left: 0;
-  height: 18px;
-  background: repeating-linear-gradient(
-    90deg,
-    #1c293c 0 12px,
-    transparent 12px 24px
-  );
-  content: "";
-  opacity: 0.18;
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0, 0, 0, 0)),
+    radial-gradient(1.5px 1.5px at 90px 40px, #ffffff, rgba(0, 0, 0, 0));
+  background-size: 200px 200px;
+  opacity: 0.3;
+  z-index: 0;
 }
-.hero-copy,
-.hero-action {
+
+.hero-panel {
   position: relative;
-  z-index: 2;
+  min-height: 50vh;
+  background: radial-gradient(
+    circle at 80% 50%,
+    rgba(0, 229, 255, 0.08) 0%,
+    transparent 60%
+  );
+  border-bottom: 1px solid rgba(0, 229, 255, 0.2);
 }
-.hero-copy {
-  max-width: 1200px;
-  padding: 74px 24px 64px;
-  margin: auto;
+
+.cyber-grid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background-image:
+    linear-gradient(transparent 95%, rgba(0, 229, 255, 0.2) 100%),
+    linear-gradient(90deg, transparent 95%, rgba(0, 229, 255, 0.2) 100%);
+  background-size: 30px 30px;
+  transform: perspective(500px) rotateX(60deg);
+  transform-origin: bottom;
+  opacity: 0.4;
 }
-.eyebrow,
-.section-kicker,
-.fleet-count {
+
+.system-status {
   font-family: "Space Mono", monospace;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #00e5ff;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
 }
-.status-dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  margin-right: 8px;
-  background: #432dd7;
-  border: 2px solid #1c293c;
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: #00e5ff;
+  border-radius: 50%;
+  margin-right: 12px;
+  box-shadow:
+    0 0 10px #00e5ff,
+    0 0 20px #00e5ff;
+  animation: pulse 1.5s infinite alternate;
 }
-h1 {
-  max-width: 720px;
-  margin: 24px 0 18px;
-  font-size: clamp(3.7rem, 9vw, 7.8rem);
-  line-height: 0.86;
-  letter-spacing: -0.05em;
-  font-weight: 700;
+
+@keyframes pulse {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }
-h1 span {
-  display: block;
-  color: #432dd7;
+
+.hero-title {
+  font-size: clamp(3rem, 7vw, 5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
-.hero-copy p {
-  max-width: 380px;
-  margin: 0;
-  font-family: "Space Mono", monospace;
-  font-size: 0.9rem;
+
+.text-cyan {
+  color: #00e5ff !important;
+  text-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+}
+
+.hero-subtitle {
+  max-width: 480px;
+  font-size: 1.1rem;
   line-height: 1.6;
 }
-.hero-action {
-  position: absolute;
-  right: max(24px, calc((100% - 1200px) / 2));
-  bottom: 44px;
+
+.border-b-cyan {
+  border-bottom: 1px solid rgba(0, 229, 255, 0.2);
 }
-.hero-rocket {
-  position: absolute;
-  right: 12%;
-  top: 66px;
-  width: 300px;
-  height: 300px;
-  display: grid;
-  place-items: center;
-  transform: rotate(8deg);
-  color: #fbfbf9;
-  filter: drop-shadow(10px 10px 0 #1c293c);
-}
-.rocket-badge {
-  width: 230px;
-  height: 230px;
-  display: grid;
-  place-items: center;
-  border: 3px solid #1c293c;
-  border-radius: 50%;
-  background: #432dd7;
-}
-.pixel-flame {
-  position: absolute;
-  bottom: 10px;
-  width: 28px;
-  height: 58px;
-  background: #fdc800;
-  box-shadow:
-    24px 18px #f05a47,
-    -24px 12px #f05a47,
-    0 54px #f05a47;
-}
-.flame-one {
-  left: 105px;
-}
-.flame-two {
-  left: 132px;
-  transform: scale(0.65);
-  background: #432dd7;
-}
-.rocket-caption {
-  position: absolute;
-  right: -20px;
-  bottom: 20px;
-  padding: 9px 12px;
-  border: 2px solid #1c293c;
-  background: #fdc800;
-  color: #1c293c;
+
+.font-space-mono {
   font-family: "Space Mono", monospace;
-  font-size: 0.65rem;
-  line-height: 1.25;
-  transform: rotate(-8deg);
 }
-.content-wrap {
-  position: relative;
-}
-.section-heading {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  margin-bottom: 22px;
-  border-bottom: 2px solid #1c293c;
-  padding-bottom: 14px;
-}
-.section-kicker {
-  color: #432dd7;
-}
-.section-heading h2 {
-  margin: 5px 0 0;
-  font-size: 2.1rem;
-  line-height: 1;
-}
-.hero-decoration {
-  position: absolute;
-  border: 3px solid #1c293c;
-}
-.decoration-square {
-  right: 44%;
-  top: 28px;
-  width: 32px;
-  height: 32px;
-  background: #fdc800;
-  transform: rotate(14deg);
-}
-.decoration-circle {
-  right: 5%;
-  bottom: 28px;
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: #f05a47;
-}
-.fleet-count {
-  color: rgba(28, 41, 60, 0.6);
-}
+
 .empty-state {
-  padding: 80px 20px;
-  text-align: center;
-  border: 3px solid #1c293c;
-  box-shadow: 8px 8px 0 #fdc800;
+  border: 1px dashed rgba(0, 229, 255, 0.2);
+  border-radius: 16px;
+  background: rgba(16, 20, 31, 0.4);
 }
-.rocket-grid :deep(.v-col) {
-  padding-top: 12px;
-  padding-bottom: 12px;
-}
-@media (max-width: 700px) {
-  .hero-panel {
-    min-height: 650px;
-  }
-  .hero-copy {
-    padding-top: 42px;
-  }
-  .hero-rocket {
-    right: 8%;
-    top: 330px;
-    transform: rotate(8deg) scale(0.7);
-  }
-  .hero-action {
-    left: 24px;
-    right: auto;
-    bottom: 32px;
-  }
-  .section-heading {
-    align-items: start;
-    gap: 16px;
-    flex-direction: column;
-  }
+
+.pulse-anim {
+  animation: pulse 2s infinite alternate;
 }
 </style>
