@@ -9,7 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     AddRocketDialog: typeof import('./src/components/rockets/AddRocketDialog.vue')['default']
     ErrorState: typeof import('./src/components/common/ErrorState.vue')['default']
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     LoadingState: typeof import('./src/components/common/LoadingState.vue')['default']
     RocketCard: typeof import('./src/components/rockets/RocketCard.vue')['default']
     RocketFilter: typeof import('./src/components/rockets/RocketFilter.vue')['default']
