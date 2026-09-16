@@ -1,9 +1,9 @@
 <template>
   <div
-    class="cyber-loading-container d-flex flex-column align-center justify-center py-16"
+    class="cyber-loading-container d-flex flex-column align-center justify-center py-8 py-md-16 px-4"
   >
     <!-- Futuristic Orbital Loader -->
-    <div class="orbital-loader mb-8">
+    <div class="orbital-loader mb-6 mb-sm-8">
       <div class="ring ring-outer" />
       <div class="ring ring-inner" />
       <div class="core-icon">
@@ -19,14 +19,12 @@
     <!-- HUD Text -->
     <div class="loading-text-wrapper text-cyan-accent-3">
       <span class="bracket text-grey-darken-1">[</span>
-      <span class="status-text">{{ text }}</span>
+      <span class="status-text mx-1">{{ text }}</span>
       <span class="blinking-cursor">_</span>
       <span class="bracket text-grey-darken-1">]</span>
     </div>
 
-    <div class="sub-text mt-2 text-grey">
-      ESTABLISHING SECURE CONNECTION...
-    </div>
+    <div class="sub-text mt-2 text-grey">ESTABLISHING SECURE CONNECTION...</div>
   </div>
 </template>
 
@@ -41,9 +39,10 @@ defineProps({
 
 <style scoped>
 .cyber-loading-container {
-  min-height: 300px;
+  min-height: 200px;
   position: relative;
   z-index: 10;
+  width: 100%;
 }
 
 /* --- Orbital Loader Animations --- */
@@ -54,6 +53,7 @@ defineProps({
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.3s ease;
 }
 
 .ring {
@@ -93,31 +93,57 @@ defineProps({
 /* --- Typography & Tech Details --- */
 .loading-text-wrapper {
   font-family: "Space Mono", monospace;
-  font-size: 1.1rem;
+  /* Font size responsif: minimum 0.8rem, ideal 4vw, maximum 1.1rem */
+  font-size: clamp(0.8rem, 4vw, 1.1rem);
   font-weight: bold;
-  letter-spacing: 0.15em;
+  letter-spacing: clamp(0.05em, 2vw, 0.15em);
   text-transform: uppercase;
   text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-wrap: wrap; /* Mencegah teks terpotong keluar layar */
 }
 
 .bracket {
-  margin: 0 8px;
   opacity: 0.7;
+}
+
+.status-text {
+  word-break: break-word;
 }
 
 .blinking-cursor {
   display: inline-block;
   width: 10px;
+  height: clamp(14px, 4vw, 18px);
   background-color: #00e5ff;
-  margin-left: 4px;
+  margin-left: 2px;
   animation: blink 1s step-end infinite;
 }
 
 .sub-text {
   font-family: "Space Mono", monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
+  /* Font responsif untuk subtext */
+  font-size: clamp(0.55rem, 2.5vw, 0.7rem);
+  letter-spacing: clamp(0.1em, 2vw, 0.2em);
   opacity: 0.6;
+  text-align: center;
+}
+
+/* --- Responsive Media Queries --- */
+@media (min-width: 600px) {
+  .cyber-loading-container {
+    min-height: 300px;
+  }
+}
+
+/* Skala ulang loader untuk layar HP yang sangat sempit (< 400px) */
+@media (max-width: 400px) {
+  .orbital-loader {
+    transform: scale(0.8);
+  }
 }
 
 /* --- Keyframes --- */
